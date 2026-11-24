@@ -2,13 +2,14 @@
 
 A production-grade, highly performant multi-tenant SaaS backend demonstrating **Multi-Tenancy & Tenant Isolation (Lecture 18)**, **Database Performance Tuning & Query Optimization (Lecture 17)**, **Event-Driven Architecture with Apache Kafka (Lecture 18)**, and **Serverless Async Worker Cold-Start Analysis (Lecture 17)**.
 
-> 🌐 **Live Interactive Web Dashboard:** [http://localhost:4000](http://localhost:4000)  
-> *Open this link in Google Chrome or any web browser to view the interactive UI, tenant switcher, real-time benchmarks, Kafka event visualizer, and serverless PDF invoice generator.*
+> 🚀 **Live Production Deployment (Render):** [https://advance-web-technology-lab-6.onrender.com/](https://advance-web-technology-lab-6.onrender.com/)  
+> 🌐 **Local Web Dashboard:** [http://localhost:4000](http://localhost:4000)  
+> *Open either link in Google Chrome or any web browser to view the interactive UI, tenant switcher, real-time benchmarks, Kafka event visualizer, and serverless PDF invoice generator.*
 
 ---
 
 ## 📋 Table of Contents
-1. [🌐 Live Interactive Web Dashboard (http://localhost:4000)](#-live-interactive-web-dashboard)
+1. [🌐 Live Interactive Web Dashboard](#-live-interactive-web-dashboard)
 2. [Architecture Overview & System Topology](#-architecture-overview--system-topology)
 3. [Requirement 1: Multi-Tenant SaaS Architecture & Tenant Isolation](#1-multi-tenant-saas-architecture--tenant-isolation-lecture-18)
 4. [Requirement 2: Database Performance Tuning & Query Optimization](#2-database-performance-tuning--query-optimization-lecture-17)
@@ -29,9 +30,10 @@ A production-grade, highly performant multi-tenant SaaS backend demonstrating **
 
 ## 🌐 Live Interactive Web Dashboard
 
-Access the live visual application in Google Chrome:
+Access the live visual application directly:
 
-👉 **[http://localhost:4000](http://localhost:4000)**
+👉 **Live Production URL (Render):** **[https://advance-web-technology-lab-6.onrender.com/](https://advance-web-technology-lab-6.onrender.com/)**  
+👉 **Local Development URL:** **[http://localhost:4000](http://localhost:4000)**
 
 ### Dashboard Features:
 - **🏢 Multi-Tenant Selector:** Switch between **Tenant Alpha**, **Tenant Beta**, and **Tenant Gamma** in real-time.
@@ -327,10 +329,9 @@ npm run benchmark:all
 - **Serverless Cold-Start Analysis:** `npm run benchmark:cold-start`
 - **Start Production Server & Web Dashboard:** `npm start`
 
-### 4. Open in Google Chrome / Browser
-Once the server is running, open the interactive visual dashboard at:
-👉 **[http://localhost:4000](http://localhost:4000)**
-*(or `http://127.0.0.1:4000`)*
+### 4. Access Live Dashboard in Browser
+- **Live Production URL (Render):** 👉 **[https://advance-web-technology-lab-6.onrender.com/](https://advance-web-technology-lab-6.onrender.com/)**
+- **Local Development URL:** 👉 **[http://localhost:4000](http://localhost:4000)** *(or `http://127.0.0.1:4000`)*
 <img width="1221" height="636" alt="image" src="https://github.com/user-attachments/assets/4bcd6188-c054-4e78-ada2-012f32ed01be" />
 
 
