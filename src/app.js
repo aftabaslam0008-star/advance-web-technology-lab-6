@@ -12,15 +12,30 @@ const benchmarkRoutes = require('./routes/benchmarkRoutes');
 
 const app = express();
 
+const fs = require('fs');
+
 // Global Middleware
 app.use(cors());
 app.use(express.json());
 
+// Determine writable / static invoice storage directory
+const isServerless = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const invoiceDir = isServerless ? path.join('/tmp', 'invoices') : path.join(__dirname, '../storage/invoices');
+
 // Serve Static Frontend Dashboard
 app.use(express.static(path.join(__dirname, '../public')));
+app.use('/invoices', express.static(invoiceDir));
 
-// Serve Generated Invoices (PDF Downloads)
-app.use('/invoices', express.static(path.join(__dirname, '../storage/invoices')));
+// Preload dashboard HTML for bulletproof serverless delivery
+let cachedDashboardHtml = '';
+try {
+  const htmlPath = path.join(__dirname, '../public/index.html');
+  if (fs.existsSync(htmlPath)) {
+    cachedDashboardHtml = fs.readFileSync(htmlPath, 'utf-8');
+  }
+} catch (e) {
+  // Ignored
+}
 
 // Request logging middleware
 app.use((req, res, next) => {
@@ -36,14 +51,17 @@ app.use((req, res, next) => {
 
 // Root Information Endpoint (Serves Dashboard on browser / HTML, JSON for API clients)
 app.get('/', (req, res) => {
-  if (req.accepts('html')) {
-    return res.sendFile(path.join(__dirname, '../public/index.html'));
+  if (req.accepts('html') && cachedDashboardHtml) {
+    return res.type('html').send(cachedDashboardHtml);
+  }
+  const indexPath = path.join(__dirname, '../public/index.html');
+  if (fs.existsSync(indexPath)) {
+    return res.sendFile(indexPath);
   }
   res.json({
     name: 'Multi-Tenant SaaS E-Commerce Platform',
     version: '1.0.0',
     documentation: 'See README.md for full architecture and lecture requirement breakdown.',
-    dashboardUrl: 'http://localhost:4000/',
     endpoints: {
       health: '/api/v1/health',
       connectionPoolStatus: '/api/v1/health/pool',

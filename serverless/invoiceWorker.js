@@ -10,9 +10,18 @@ let containerInitTimestamp = Date.now();
 let invocationCount = 0;
 
 // Ensure local invoice storage directory exists
-const INVOICE_DIR = path.join(__dirname, '..', 'storage', 'invoices');
-if (!fs.existsSync(INVOICE_DIR)) {
-  fs.mkdirSync(INVOICE_DIR, { recursive: true });
+// On Vercel / AWS Lambda, the filesystem is read-only except /tmp
+const isServerlessEnv = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.NODE_ENV === 'production');
+const INVOICE_DIR = isServerlessEnv
+  ? path.join('/tmp', 'invoices')
+  : path.join(__dirname, '..', 'storage', 'invoices');
+
+try {
+  if (!fs.existsSync(INVOICE_DIR)) {
+    fs.mkdirSync(INVOICE_DIR, { recursive: true });
+  }
+} catch (e) {
+  // Suppress EROFS on read-only environments
 }
 
 /**
@@ -93,8 +102,15 @@ async function generateInvoice(event) {
     }
   });
 
-  // Write file to storage
-  fs.writeFileSync(pdfFilePath, pdfBuffer);
+  // Write file to storage if directory is writable
+  try {
+    if (!fs.existsSync(INVOICE_DIR)) {
+      fs.mkdirSync(INVOICE_DIR, { recursive: true });
+    }
+    fs.writeFileSync(pdfFilePath, pdfBuffer);
+  } catch (fsErr) {
+    logger.warn('Could not persist PDF to storage directory', { error: fsErr.message });
+  }
 
   // Persist invoice record to PostgreSQL database scoped to tenant
   try {
