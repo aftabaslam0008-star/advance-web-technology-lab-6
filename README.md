@@ -331,3 +331,30 @@ npm run benchmark:all
 Once the server is running, open the interactive visual dashboard at:
 👉 **[http://localhost:4000](http://localhost:4000)**
 *(or `http://127.0.0.1:4000`)*
+<img width="1221" height="636" alt="image" src="https://github.com/user-attachments/assets/4bcd6188-c054-4e78-ada2-012f32ed01be" />
+
+
+<img width="1008" height="328" alt="image" src="https://github.com/user-attachments/assets/67851e8b-0b7d-498f-b665-a9826e96f620" />
+
+
+<img width="994" height="282" alt="image" src="https://github.com/user-attachments/assets/d479b2c5-876c-4af6-9e1e-3d15ff2b60bd" />
+
+
+
+<img width="1013" height="306" alt="image" src="https://github.com/user-attachments/assets/f0d2dbbb-9d6a-4802-9781-3ff1787cccd3" />
+
+
+<img width="999" height="415" alt="image" src="https://github.com/user-attachments/assets/fec80341-d967-4b2b-b61d-2a61605d4929" />
+
+
+
+<img width="745" height="400" alt="image" src="https://github.com/user-attachments/assets/6727e834-0b9d-44f2-a116-dff489793bbf" />
+
+
+<img width="1155" height="712" alt="image" src="https://github.com/user-attachments/assets/fa792dab-a116-4d38-9aa8-fac629214607" />
+
+
+
+
+
+
