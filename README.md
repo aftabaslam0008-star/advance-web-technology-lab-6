@@ -34,6 +34,7 @@ Access the live visual application directly:
 
 👉 **Live Production URL (Render):** **[https://advance-web-technology-lab-6.onrender.com/](https://advance-web-technology-lab-6.onrender.com/)**  
 👉 **Local Development URL:** **[http://localhost:4000](http://localhost:4000)**
+Vercel link**https://advance-web-technology-lab-6-9dqr-git-main-aftabaslam0008-9350.vercel.app/
 
 ### Dashboard Features:
 - **🏢 Multi-Tenant Selector:** Switch between **Tenant Alpha**, **Tenant Beta**, and **Tenant Gamma** in real-time.
