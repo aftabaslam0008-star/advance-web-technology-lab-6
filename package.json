@@ -5,6 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
+    "sequence": "node scripts/run-sequence.js",
+    "demo": "node scripts/run-sequence.js",
     "test": "node scripts/test-tenant-isolation.js",
     "test:isolation": "node scripts/test-tenant-isolation.js",
     "benchmark:db": "node scripts/run-db-benchmarks.js",

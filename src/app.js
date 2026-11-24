@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { tenantResolver } = require('./middleware/tenantResolver');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -15,6 +16,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve Static Frontend Dashboard
+app.use(express.static(path.join(__dirname, '../public')));
+
+// Serve Generated Invoices (PDF Downloads)
+app.use('/invoices', express.static(path.join(__dirname, '../storage/invoices')));
+
 // Request logging middleware
 app.use((req, res, next) => {
   const start = Date.now();
@@ -27,12 +34,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Root Information Endpoint
+// Root Information Endpoint (Serves Dashboard on browser / HTML, JSON for API clients)
 app.get('/', (req, res) => {
+  if (req.accepts('html')) {
+    return res.sendFile(path.join(__dirname, '../public/index.html'));
+  }
   res.json({
     name: 'Multi-Tenant SaaS E-Commerce Platform',
     version: '1.0.0',
     documentation: 'See README.md for full architecture and lecture requirement breakdown.',
+    dashboardUrl: 'http://localhost:4000/',
     endpoints: {
       health: '/api/v1/health',
       connectionPoolStatus: '/api/v1/health/pool',

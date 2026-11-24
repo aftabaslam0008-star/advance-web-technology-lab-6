@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Tenant SaaS Architecture & Performance Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    pre, code { font-family: 'JetBrains Mono', monospace; }
+    .badge-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+  <!-- Top Navbar -->
+  <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+          <i class="fa-solid fa-cubes text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-lg font-bold bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">SaaS Multi-Tenant Cloud</h1>
+          <p class="text-xs text-slate-400">Lectures 17 & 18 • Performance & Event-Driven Engine</p>
+        </div>
+      </div>
+
+      <!-- Tenant Context Selector -->
+      <div class="flex items-center space-x-4">
+        <div class="flex items-center bg-slate-900 border border-slate-700/80 rounded-lg px-3 py-1.5 shadow-inner">
+          <i class="fa-solid fa-building text-indigo-400 mr-2 text-xs"></i>
+          <span class="text-xs text-slate-400 mr-2 font-medium">Tenant Context:</span>
+          <select id="tenantSelect" onchange="switchTenant(this.value)" class="bg-transparent text-sm font-semibold text-indigo-300 focus:outline-none cursor-pointer">
+            <option value="tenant-alpha" class="bg-slate-900 text-white">Tenant Alpha (Alpha Logistics)</option>
+            <option value="tenant-beta" class="bg-slate-900 text-white">Tenant Beta (Beta Retailers)</option>
+            <option value="tenant-gamma" class="bg-slate-900 text-white">Tenant Gamma (Gamma Tech)</option>
+          </select>
+        </div>
+
+        <div class="flex items-center space-x-2 text-xs font-semibold px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 badge-pulse"></span>
+          <span>Online :4000</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Hero / Status Banner -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-xl">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <div class="text-xs text-slate-400 uppercase font-semibold">Tenant Isolation</div>
+          <div class="text-lg font-bold text-white">Zero Leakage</div>
+          <div class="text-xs text-emerald-400">Context Discriminator Active</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 text-xl">
+          <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div>
+          <div class="text-xs text-slate-400 uppercase font-semibold">Database Optimization</div>
+          <div class="text-lg font-bold text-white">Single JOIN & Index</div>
+          <div class="text-xs text-cyan-400">4.2x Faster (N+1 Solved)</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-xl">
+          <i class="fa-solid fa-network-wired"></i>
+        </div>
+        <div>
+          <div class="text-xs text-slate-400 uppercase font-semibold">Apache Kafka</div>
+          <div class="text-lg font-bold text-white">Event-Driven</div>
+          <div class="text-xs text-amber-400">202 Accepted • Key Partitioning</div>
+        </div>
+      </div>
+
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-xl p-4 flex items-center space-x-4">
+        <div class="w-12 h-12 rounded-lg bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl">
+          <i class="fa-solid fa-snowflake"></i>
+        </div>
+        <div>
+          <div class="text-xs text-slate-400 uppercase font-semibold">Serverless Worker</div>
+          <div class="text-lg font-bold text-white">Cold vs Warm</div>
+          <div class="text-xs text-purple-400">Async PDF Generation</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="flex space-x-2 border-b border-slate-800 pb-2 overflow-x-auto">
+      <button onclick="switchTab('multi-tenant')" id="tab-btn-multi-tenant" class="tab-btn active px-4 py-2 rounded-lg text-sm font-semibold bg-indigo-600 text-white flex items-center space-x-2">
+        <i class="fa-solid fa-users"></i>
+        <span>1. Multi-Tenant Architecture</span>
+      </button>
+      <button onclick="switchTab('database-tuning')" id="tab-btn-database-tuning" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center space-x-2">
+        <i class="fa-solid fa-gauge-high"></i>
+        <span>2. Database Tuning & N+1</span>
+      </button>
+      <button onclick="switchTab('kafka-pipeline')" id="tab-btn-kafka-pipeline" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center space-x-2">
+        <i class="fa-solid fa-paper-plane"></i>
+        <span>3. Kafka Event Pipeline</span>
+      </button>
+      <button onclick="switchTab('serverless-worker')" id="tab-btn-serverless-worker" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center space-x-2">
+        <i class="fa-solid fa-file-pdf"></i>
+        <span>4. Serverless Cold-Start</span>
+      </button>
+      <button onclick="switchTab('pool-health')" id="tab-btn-pool-health" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold bg-slate-800/60 hover:bg-slate-800 text-slate-400 hover:text-white flex items-center space-x-2">
+        <i class="fa-solid fa-server"></i>
+        <span>5. Connection Pool</span>
+      </button>
+    </div>
+
+    <!-- TAB 1: MULTI-TENANT ARCHITECTURE -->
+    <div id="tab-content-multi-tenant" class="tab-pane space-y-6">
+      <div class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between pb-4 border-b border-slate-700/60 mb-6 gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center">
+              <span class="w-3 h-3 rounded-full bg-indigo-500 mr-3"></span>
+              Tenant-Isolated Product Inventory
+            </h2>
+            <p class="text-sm text-slate-400 mt-1">
+              Active Context: <span id="lblActiveTenant" class="text-indigo-400 font-mono font-semibold">tenant-alpha</span>
+              (Scope discriminator: <code class="text-xs bg-slate-900 px-2 py-0.5 rounded text-amber-300">WHERE tenant_id = $1</code>)
+            </p>
+          </div>
+          <div class="flex space-x-3">
+            <button onclick="loadProducts()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold flex items-center space-x-2 shadow-lg shadow-indigo-500/20 transition">
+              <i class="fa-solid fa-rotate-right"></i>
+              <span>Refresh Inventory</span>
+            </button>
+            <button onclick="testCrossTenantIntrusion()" class="px-4 py-2 bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/30 rounded-lg text-sm font-semibold flex items-center space-x-2 transition">
+              <i class="fa-solid fa-bug"></i>
+              <span>Test Cross-Tenant Intrusion (Exploit)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Products Table -->
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-300">
+            <thead class="bg-slate-900/60 text-xs uppercase text-slate-400 border-b border-slate-700/80">
+              <tr>
+                <th class="py-3 px-4">Product ID</th>
+                <th class="py-3 px-4">SKU</th>
+                <th class="py-3 px-4">Name</th>
+                <th class="py-3 px-4">Price</th>
+                <th class="py-3 px-4">Stock</th>
+                <th class="py-3 px-4">Tenant Scope</th>
+              </tr>
+            </thead>
+            <tbody id="productsTableBody" class="divide-y divide-slate-800">
+              <tr><td colspan="6" class="py-4 text-center text-slate-500">Loading tenant inventory...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Cross-Tenant Exploit Result Console -->
+        <div id="exploitConsole" class="mt-6 hidden bg-slate-950 border border-slate-800 rounded-lg p-4 font-mono text-xs">
+          <div class="flex items-center justify-between text-slate-400 mb-2 border-b border-slate-800 pb-1">
+            <span class="font-bold text-rose-400">SECURITY TEST: CROSS-TENANT DATA BOUNDARY CHECK</span>
+            <span id="exploitStatusBadge" class="px-2 py-0.5 rounded text-[10px] uppercase font-bold"></span>
+          </div>
+          <pre id="exploitOutput" class="text-slate-300 whitespace-pre-wrap"></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: DATABASE OPTIMIZATION -->
+    <div id="tab-content-database-tuning" class="tab-pane hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        
+        <!-- N+1 Benchmark Card -->
+        <div class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-white flex items-center">
+                <i class="fa-solid fa-arrow-down-up-across-line text-cyan-400 mr-2"></i>
+                N+1 Query vs Single JOIN
+              </h3>
+              <button onclick="runNPlusOneBenchmark()" id="btnNPlusOne" class="px-3 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5">
+                <i class="fa-solid fa-play"></i>
+                <span>Run Benchmark</span>
+              </button>
+            </div>
+            <p class="text-xs text-slate-400 mb-4">
+              Compares un-optimized (1 query for orders + N individual queries for order items) against optimized single JOIN with JSON aggregation.
+            </p>
+
+            <div id="nPlusOneResults" class="space-y-4">
+              <div class="p-3 bg-slate-900/60 rounded-lg border border-slate-800 text-xs space-y-2">
+                <div class="flex justify-between font-semibold">
+                  <span class="text-rose-400">Un-Optimized (N+1 Queries)</span>
+                  <span id="n1Queries" class="text-white">101 queries</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2">
+                  <div id="n1Bar" class="bg-rose-500 h-2 rounded-full" style="width: 100%"></div>
+                </div>
+                <div class="text-right text-[11px] text-slate-400" id="n1Latency">Latency: ~121.49 ms</div>
+              </div>
+
+              <div class="p-3 bg-slate-900/60 rounded-lg border border-slate-800 text-xs space-y-2">
+                <div class="flex justify-between font-semibold">
+                  <span class="text-emerald-400">Optimized (Single JOIN with json_agg)</span>
+                  <span id="optQueries" class="text-white">1 query</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2">
+                  <div id="optBar" class="bg-emerald-500 h-2 rounded-full" style="width: 24%"></div>
+                </div>
+                <div class="text-right text-[11px] text-slate-400" id="optLatency">Latency: ~28.95 ms</div>
+              </div>
+
+              <div id="speedupBadge" class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-center text-xs font-bold text-emerald-400">
+                Performance Gain: 4.2x Faster (76.2% Latency Drop)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXPLAIN ANALYZE Card -->
+        <div class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-6 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-bold text-white flex items-center">
+                <i class="fa-solid fa-magnifying-glass-chart text-amber-400 mr-2"></i>
+                EXPLAIN ANALYZE Query Plans
+              </h3>
+              <button onclick="runExplainAnalyzeBenchmark()" id="btnExplain" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5">
+                <i class="fa-solid fa-terminal"></i>
+                <span>Run EXPLAIN</span>
+              </button>
+            </div>
+            <p class="text-xs text-slate-400 mb-3">
+              Composite Index: <code class="text-amber-300 font-mono text-[11px]">idx_orders_tenant_created (tenant_id, created_at DESC)</code>
+            </p>
+
+            <div class="space-y-3 font-mono text-xs">
+              <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                <div class="text-rose-400 font-bold mb-1 text-[11px]">BEFORE INDEX (Seq Scan / Heapsort):</div>
+                <pre id="planBefore" class="text-slate-400 text-[10px] whitespace-pre-wrap max-h-24 overflow-y-auto">Sort Key: created_at DESC&#10;Planning Time: 1.662 ms&#10;Execution Time: 10.262 ms</pre>
+              </div>
+
+              <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                <div class="text-emerald-400 font-bold mb-1 text-[11px]">AFTER COMPOSITE INDEX (Bitmap Index Scan):</div>
+                <pre id="planAfter" class="text-slate-300 text-[10px] whitespace-pre-wrap max-h-24 overflow-y-auto">Bitmap Index Scan on idx_orders_tenant_created&#10;Planning Time: 0.277 ms&#10;Execution Time: 0.883 ms (11.6x Faster)</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: KAFKA PIPELINE -->
+    <div id="tab-content-kafka-pipeline" class="tab-pane hidden space-y-6">
+      <div class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-700/60 mb-6 gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center">
+              <i class="fa-solid fa-network-wired text-amber-400 mr-2"></i>
+              Event-Driven Order Processing (Kafka)
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              POST /api/v1/orders returns <span class="text-emerald-400 font-bold">202 Accepted</span> immediately. Consumer group updates inventory asynchronously.
+            </p>
+          </div>
+          <button onclick="placeOrderKafka()" id="btnPlaceOrder" class="px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white rounded-lg text-sm font-bold flex items-center space-x-2 shadow-lg shadow-amber-500/20 transition">
+            <i class="fa-solid fa-cart-plus"></i>
+            <span>Place Test Order (202 Accepted)</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Order Producer Payload -->
+          <div class="space-y-3">
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">1. Producer Response (HTTP 202 Accepted)</div>
+            <pre id="producerResponse" class="bg-slate-950 p-4 rounded-lg border border-slate-800 text-xs font-mono text-emerald-300 whitespace-pre-wrap min-h-[160px]">Click 'Place Test Order' above to trigger Kafka Producer pipeline...</pre>
+          </div>
+
+          <!-- Consumer Event Stream -->
+          <div class="space-y-3">
+            <div class="text-xs font-bold text-slate-400 uppercase tracking-wider">2. Background Consumer Group (order-processing-group)</div>
+            <div id="consumerStream" class="bg-slate-950 p-4 rounded-lg border border-slate-800 text-xs font-mono text-slate-300 space-y-2 min-h-[160px]">
+              <div class="text-slate-500 italic">Listening on topic: tenant.orders...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: SERVERLESS WORKER -->
+    <div id="tab-content-serverless-worker" class="tab-pane hidden space-y-6">
+      <div class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-6">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-700/60 mb-6 gap-4">
+          <div>
+            <h2 class="text-xl font-bold text-white flex items-center">
+              <i class="fa-solid fa-snowflake text-purple-400 mr-2"></i>
+              Serverless Worker: PDF Invoice Generator
+            </h2>
+            <p class="text-xs text-slate-400 mt-1">
+              Demonstrating container spin-up (Cold Start) vs reused container execution (Warm Start).
+            </p>
+          </div>
+          <div class="flex space-x-3">
+            <button onclick="triggerServerlessColdStart()" id="btnColdStart" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-sm font-semibold flex items-center space-x-2 transition shadow-lg shadow-purple-500/20">
+              <i class="fa-solid fa-play"></i>
+              <span>Trigger Serverless Function</span>
+            </button>
+            <a id="btnDownloadInvoice" href="#" target="_blank" class="hidden px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-sm font-semibold flex items-center space-x-2 transition">
+              <i class="fa-solid fa-file-arrow-down text-emerald-400"></i>
+              <span>Open PDF Invoice</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-lg">
+            <div class="text-xs text-slate-400">Cold Start Latency</div>
+            <div id="lblColdLatency" class="text-2xl font-bold text-rose-400 mt-1">61.42 ms</div>
+            <div class="text-[11px] text-slate-500 mt-0.5">Container boot & module load</div>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-lg">
+            <div class="text-xs text-slate-400">Warm Start Latency</div>
+            <div id="lblWarmLatency" class="text-2xl font-bold text-emerald-400 mt-1">14.86 ms</div>
+            <div class="text-[11px] text-slate-500 mt-0.5">Reused memory container</div>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-lg">
+            <div class="text-xs text-slate-400">Latency Reduction</div>
+            <div id="lblSpeedupFactor" class="text-2xl font-bold text-purple-400 mt-1">4.13x Faster</div>
+            <div class="text-[11px] text-slate-500 mt-0.5">75.8% execution time saved</div>
+          </div>
+        </div>
+
+        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 font-mono text-xs">
+          <div class="text-slate-400 font-bold mb-2">EXECUTION LOG CONSOLE:</div>
+          <pre id="serverlessConsole" class="text-slate-300 whitespace-pre-wrap">Click 'Trigger Serverless Function' to benchmark cold vs warm start latency...</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: POOL HEALTH -->
+    <div id="tab-content-pool-health" class="tab-pane hidden space-y-6">
+      <div class="bg-slate-800/40 border border-slate-700/60 rounded-xl p-6">
+        <h2 class="text-xl font-bold text-white mb-2 flex items-center">
+          <i class="fa-solid fa-server text-emerald-400 mr-2"></i>
+          PostgreSQL Database Connection Pooling (pg-pool)
+        </h2>
+        <p class="text-xs text-slate-400 mb-6">
+          Real-time metrics from <code class="text-indigo-400 font-mono">GET /api/v1/health/pool</code>
+        </p>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-lg">
+            <div class="text-xs text-slate-400 uppercase">Active Connections</div>
+            <div id="poolActive" class="text-2xl font-bold text-white mt-1">4</div>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-lg">
+            <div class="text-xs text-slate-400 uppercase">Idle Reserve</div>
+            <div id="poolIdle" class="text-2xl font-bold text-emerald-400 mt-1">16</div>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-lg">
+            <div class="text-xs text-slate-400 uppercase">Max Pool Size</div>
+            <div id="poolMax" class="text-2xl font-bold text-indigo-400 mt-1">20</div>
+          </div>
+          <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-lg">
+            <div class="text-xs text-slate-400 uppercase">Pool Health</div>
+            <div id="poolHealth" class="text-2xl font-bold text-emerald-400 mt-1">HEALTHY</div>
+          </div>
+        </div>
+
+        <pre id="poolJson" class="bg-slate-950 p-4 rounded-lg border border-slate-800 font-mono text-xs text-slate-300 whitespace-pre-wrap"></pre>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    let activeTenant = 'tenant-alpha';
+
+    function switchTenant(tenant) {
+      activeTenant = tenant;
+      document.getElementById('lblActiveTenant').innerText = tenant;
+      loadProducts();
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-600', 'text-white');
+        btn.classList.add('bg-slate-800/60', 'text-slate-400');
+      });
+
+      document.getElementById(`tab-content-${tabId}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-btn-${tabId}`);
+      activeBtn.classList.remove('bg-slate-800/60', 'text-slate-400');
+      activeBtn.classList.add('bg-indigo-600', 'text-white');
+
+      if (tabId === 'pool-health') loadPoolHealth();
+    }
+
+    async function loadProducts() {
+      const tbody = document.getElementById('productsTableBody');
+      tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-500">Fetching tenant catalog...</td></tr>';
+
+      try {
+        const res = await fetch('/api/v1/products', {
+          headers: { 'x-tenant-id': activeTenant }
+        });
+        const data = await res.json();
+        
+        if (!data.products || data.products.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-slate-500">No products found for this tenant.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = data.products.map(p => `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="py-3 px-4 font-mono text-xs text-indigo-400">${p.id}</td>
+            <td class="py-3 px-4 font-mono text-xs text-slate-400">${p.sku}</td>
+            <td class="py-3 px-4 font-medium text-white">${p.name}</td>
+            <td class="py-3 px-4 font-bold text-emerald-400">$${Number(p.price).toFixed(2)}</td>
+            <td class="py-3 px-4">${p.stock} units</td>
+            <td class="py-3 px-4"><span class="px-2 py-0.5 rounded text-[11px] font-mono bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">${p.tenant_id}</span></td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-rose-400">Failed to load: ${err.message}</td></tr>`;
+      }
+    }
+
+    async function testCrossTenantIntrusion() {
+      const consoleEl = document.getElementById('exploitConsole');
+      const outputEl = document.getElementById('exploitOutput');
+      const badge = document.getElementById('exploitStatusBadge');
+      consoleEl.classList.remove('hidden');
+
+      outputEl.innerText = `[ATTACK SIMULATION] Active context is [${activeTenant}].\nAttempting to query /api/v1/orders/ord_seed_1 (belongs to Tenant Alpha)...`;
+
+      try {
+        const res = await fetch('/api/v1/orders/ord_seed_1', {
+          headers: { 'x-tenant-id': 'tenant-beta' } // Impersonating Tenant Beta
+        });
+
+        const status = res.status;
+        const data = await res.json();
+
+        if (status === 404) {
+          badge.className = 'px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+          badge.innerText = 'ISOLATION SECURE (HTTP 404)';
+          outputEl.innerText += `\n\nHTTP STATUS: 404 NOT FOUND\nResponse Body: ${JSON.stringify(data, null, 2)}\n\n[SUCCESS] Tenant Beta received 404. Tenant Alpha data was NEVER exposed (0% leakage).`;
+        } else {
+          badge.className = 'px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+          badge.innerText = 'DATA LEAK DETECTED';
+          outputEl.innerText += `\n\nUNEXPECTED HTTP STATUS: ${status}\n${JSON.stringify(data, null, 2)}`;
+        }
+      } catch (e) {
+        outputEl.innerText += `\nError: ${e.message}`;
+      }
+    }
+
+    async function runNPlusOneBenchmark() {
+      const btn = document.getElementById('btnNPlusOne');
+      btn.disabled = true;
+      btn.innerText = 'Benchmarking...';
+
+      try {
+        const res = await fetch('/api/v1/benchmarks/n-plus-one', {
+          headers: { 'x-tenant-id': activeTenant }
+        });
+        const data = await res.json();
+        const comp = data.comparison;
+
+        document.getElementById('n1Queries').innerText = `${comp.unoptimized.queriesExecuted} queries`;
+        document.getElementById('n1Latency').innerText = `Latency: ${comp.unoptimized.executionTimeMs} ms`;
+
+        document.getElementById('optQueries').innerText = `${comp.optimized.queriesExecuted} query`;
+        document.getElementById('optLatency').innerText = `Latency: ${comp.optimized.executionTimeMs} ms`;
+
+        document.getElementById('speedupBadge').innerText = `Performance Gain: ${comp.performanceGain.speedupMultiplier} (${comp.performanceGain.latencyReduction} Latency Drop)`;
+      } catch (err) {
+        alert('Benchmark error: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Run Benchmark';
+      }
+    }
+
+    async function runExplainAnalyzeBenchmark() {
+      const btn = document.getElementById('btnExplain');
+      btn.disabled = true;
+      btn.innerText = 'Analyzing...';
+
+      try {
+        const res = await fetch('/api/v1/benchmarks/explain-analyze', {
+          headers: { 'x-tenant-id': activeTenant }
+        });
+        const data = await res.json();
+
+        document.getElementById('planBefore').innerText = data.executionPlans.beforeCompositeIndex;
+        document.getElementById('planAfter').innerText = data.executionPlans.afterCompositeIndex;
+      } catch (e) {
+        alert('EXPLAIN error: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Run EXPLAIN';
+      }
+    }
+
+    async function placeOrderKafka() {
+      const btn = document.getElementById('btnPlaceOrder');
+      btn.disabled = true;
+      btn.innerText = 'Placing...';
+
+      const respEl = document.getElementById('producerResponse');
+      const streamEl = document.getElementById('consumerStream');
+
+      try {
+        const res = await fetch('/api/v1/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-tenant-id': activeTenant
+          },
+          body: JSON.stringify({
+            items: [{ productId: 'prod_a1', quantity: 1 }]
+          })
+        });
+
+        const data = await res.json();
+        respEl.innerText = `HTTP ${res.status} ACCEPTED\n\n` + JSON.stringify(data, null, 2);
+
+        streamEl.innerHTML = `
+          <div class="text-amber-400 font-bold mb-1">EVENT PUBLISHED:</div>
+          <div>Topic: <span class="text-white">${data.kafka.topic}</span></div>
+          <div>Partition Key: <span class="text-white">${data.kafka.key}</span></div>
+          <div>Partition: <span class="text-white">${data.kafka.partition}</span> | Offset: <span class="text-white">${data.kafka.offset}</span></div>
+          <div class="mt-2 text-cyan-400">Processing in background consumer...</div>
+        `;
+
+        setTimeout(async () => {
+          const kRes = await fetch('/api/v1/health/kafka');
+          const kData = await kRes.json();
+          streamEl.innerHTML += `
+            <div class="mt-2 pt-2 border-t border-slate-800 text-emerald-400 font-bold">[OFFSET COMMITTED]</div>
+            <div>Consumer Group: ${kData.consumerGroup}</div>
+            <div>Total Events Processed: ${kData.totalEventsProcessed}</div>
+            <div class="text-xs text-slate-400 mt-1">Stock deducted & Order confirmed.</div>
+          `;
+          loadProducts();
+        }, 300);
+
+      } catch (e) {
+        respEl.innerText = 'Error: ' + e.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Place Test Order (202 Accepted)';
+      }
+    }
+
+    async function triggerServerlessColdStart() {
+      const btn = document.getElementById('btnColdStart');
+      const consoleEl = document.getElementById('serverlessConsole');
+      const dlBtn = document.getElementById('btnDownloadInvoice');
+      btn.disabled = true;
+      btn.innerText = 'Invoking Worker...';
+
+      consoleEl.innerText = 'Invoking Serverless Async Invoice Generator Function...\n';
+
+      try {
+        const res = await fetch('/api/v1/health/serverless');
+        const data = await res.json();
+
+        document.getElementById('lblColdLatency').innerText = `${data.coldStart.executionTimeMs} ms`;
+        document.getElementById('lblWarmLatency').innerText = `${data.warmAverageMs} ms`;
+        document.getElementById('lblSpeedupFactor').innerText = `${data.speedup}x Faster`;
+
+        consoleEl.innerText = `[COLD START INVOCATION #1]\n- Latency: ${data.coldStart.executionTimeMs} ms\n- Container State: COLD (Boot + module compile)\n- PDF Path: ${data.coldStart.pdfFilePath}\n\n[WARM START INVOCATIONS #2..#6 (Reused Container)]\n- Average Latency: ${data.warmAverageMs} ms\n- Latency Reduction: ${data.overheadReduction}%\n\nInvoice Number: ${data.coldStart.invoiceNumber}`;
+
+        dlBtn.classList.remove('hidden');
+        dlBtn.href = `/invoices/${data.coldStart.invoiceNumber}.pdf`;
+      } catch (e) {
+        consoleEl.innerText = 'Error: ' + e.message;
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Trigger Serverless Function';
+      }
+    }
+
+    async function loadPoolHealth() {
+      try {
+        const res = await fetch('/api/v1/health/pool');
+        const data = await res.json();
+        const p = data.pool;
+
+        document.getElementById('poolActive').innerText = p.activeConnections || 4;
+        document.getElementById('poolIdle').innerText = p.idleConnections || 16;
+        document.getElementById('poolMax').innerText = p.maxConnections || 20;
+        document.getElementById('poolHealth').innerText = data.status;
+
+        document.getElementById('poolJson').innerText = JSON.stringify(data, null, 2);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // Initialize
+    loadProducts();
+  </script>
+</body>
+</html>

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getPoolStatus } = require('../config/database');
 const { getProcessedEvents } = require('../kafka/orderConsumer');
+const { generateInvoice, resetColdState } = require('../../serverless/invoiceWorker');
 
 /**
  * GET /api/v1/health
@@ -13,6 +14,49 @@ router.get('/', (req, res) => {
     uptime: process.uptime(),
     timestamp: new Date().toISOString()
   });
+});
+
+/**
+ * GET /api/v1/health/serverless
+ * Triggers Serverless Cold-Start and Warm-Start benchmarks and returns data for the UI
+ */
+router.get('/serverless', async (req, res, next) => {
+  try {
+    resetColdState();
+    const testOrderId = `ord_dash_${Date.now()}`;
+    const payload = {
+      tenantId: 'tenant-alpha',
+      orderId: testOrderId,
+      totalAmount: 499.00,
+      items: [{ productId: 'Enterprise Cloud Server (ALPH-SRV-01)', quantity: 1, unitPrice: 499.00, subtotal: 499.00 }]
+    };
+
+    // Cold invocation
+    const coldStart = await generateInvoice(payload);
+
+    // Warm invocations
+    const warmTimes = [];
+    for (let i = 0; i < 4; i++) {
+      const warm = await generateInvoice(payload);
+      warmTimes.push(warm.executionTimeMs);
+    }
+
+    const warmAverageMs = Number((warmTimes.reduce((a, b) => a + b, 0) / warmTimes.length).toFixed(2));
+    const speedup = (coldStart.executionTimeMs / (warmAverageMs || 1)).toFixed(2);
+    const overheadReduction = (
+      ((coldStart.executionTimeMs - warmAverageMs) / (coldStart.executionTimeMs || 1)) * 100
+    ).toFixed(2);
+
+    res.json({
+      coldStart,
+      warmAverageMs,
+      warmTimes,
+      speedup,
+      overheadReduction
+    });
+  } catch (err) {
+    next(err);
+  }
 });
 
 /**
@@ -48,3 +92,4 @@ router.get('/kafka', (req, res) => {
 });
 
 module.exports = router;
+
