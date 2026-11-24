@@ -2,24 +2,44 @@
 
 A production-grade, highly performant multi-tenant SaaS backend demonstrating **Multi-Tenancy & Tenant Isolation (Lecture 18)**, **Database Performance Tuning & Query Optimization (Lecture 17)**, **Event-Driven Architecture with Apache Kafka (Lecture 18)**, and **Serverless Async Worker Cold-Start Analysis (Lecture 17)**.
 
+> 🌐 **Live Interactive Web Dashboard:** [http://localhost:4000](http://localhost:4000)  
+> *Open this link in Google Chrome or any web browser to view the interactive UI, tenant switcher, real-time benchmarks, Kafka event visualizer, and serverless PDF invoice generator.*
+
 ---
 
 ## 📋 Table of Contents
-1. [Architecture Overview & System Topology](#-architecture-overview--system-topology)
-2. [Requirement 1: Multi-Tenant SaaS Architecture & Tenant Isolation](#1-multi-tenant-saas-architecture--tenant-isolation-lecture-18)
-3. [Requirement 2: Database Performance Tuning & Query Optimization](#2-database-performance-tuning--query-optimization-lecture-17)
+1. [🌐 Live Interactive Web Dashboard (http://localhost:4000)](#-live-interactive-web-dashboard)
+2. [Architecture Overview & System Topology](#-architecture-overview--system-topology)
+3. [Requirement 1: Multi-Tenant SaaS Architecture & Tenant Isolation](#1-multi-tenant-saas-architecture--tenant-isolation-lecture-18)
+4. [Requirement 2: Database Performance Tuning & Query Optimization](#2-database-performance-tuning--query-optimization-lecture-17)
    - [Benchmark 1: N+1 Problem vs Single JOIN Optimization](#benchmark-1-n1-query-problem-vs-single-join-optimization)
    - [Benchmark 2: EXPLAIN ANALYZE Composite Index Optimization](#benchmark-2-explain-analyze-composite-index-optimization)
    - [Database Connection Pooling Configuration](#database-connection-pooling-configuration)
-4. [Requirement 3: Event-Driven Architecture with Apache Kafka](#3-event-driven-architecture-with-apache-kafka-lecture-18)
+5. [Requirement 3: Event-Driven Architecture with Apache Kafka](#3-event-driven-architecture-with-apache-kafka-lecture-18)
    - [Order Producer (202 Accepted)](#order-producer-post-apiv1orders)
    - [Partitioning & Sequential FIFO Ordering](#partitioning--sequential-ordering)
    - [Consumer Group & Inventory Worker](#consumer-group-order-processing-group)
-5. [Requirement 4: Serverless Async Worker & Cold-Start Analysis](#4-serverless-async-worker--cold-start-analysis-lecture-17)
+6. [Requirement 4: Serverless Async Worker & Cold-Start Analysis](#4-serverless-async-worker--cold-start-analysis-lecture-17)
    - [Serverless PDF Invoice Generator](#serverless-pdf-invoice-generator)
    - [Cold Start vs Warm Start Latency Analysis](#cold-start-vs-warm-start-benchmark-results)
-6. [API Reference](#-api-reference)
-7. [Getting Started & Running Verification Harness](#-getting-started--running-verification-harness)
+7. [API Reference](#-api-reference)
+8. [Getting Started & Running Verification Harness](#-getting-started--running-verification-harness)
+
+---
+
+## 🌐 Live Interactive Web Dashboard
+
+Access the live visual application in Google Chrome:
+
+👉 **[http://localhost:4000](http://localhost:4000)**
+
+### Dashboard Features:
+- **🏢 Multi-Tenant Selector:** Switch between **Tenant Alpha**, **Tenant Beta**, and **Tenant Gamma** in real-time.
+- **🛡️ Cross-Tenant Isolation Exploit Button:** Simulates an intrusion attempt and proves zero data leakage (`HTTP 404 Not Found`).
+- **⚡ N+1 Query & EXPLAIN ANALYZE Runner:** Run live database query benchmarks and view PostgreSQL execution plans.
+- **📨 Kafka Event Pipeline:** Click "Place Test Order" to see instant `202 Accepted` response, partition assignment, offset commit, and inventory deduction.
+- **❄️ Serverless Cold-Start Benchmark & PDF Download:** Measure cold start vs warm start latency and download generated PDF tax invoices.
+- **🔌 Connection Pool Real-Time Meters:** Live inspection of active connections, idle reserves, and queue health.
 
 ---
 
@@ -301,7 +321,13 @@ npm run benchmark:all
 ```
 
 ### 3. Run Individual Benchmark & Test Scripts
+- **Sequential Step-by-Step Demo:** `npm run sequence` *(or double-click `run.bat`)*
 - **Tenant Isolation Tests:** `npm test`
 - **Database Query & Index Benchmarks:** `npm run benchmark:db`
 - **Serverless Cold-Start Analysis:** `npm run benchmark:cold-start`
-- **Start Production Server:** `npm start`
+- **Start Production Server & Web Dashboard:** `npm start`
+
+### 4. Open in Google Chrome / Browser
+Once the server is running, open the interactive visual dashboard at:
+👉 **[http://localhost:4000](http://localhost:4000)**
+*(or `http://127.0.0.1:4000`)*
