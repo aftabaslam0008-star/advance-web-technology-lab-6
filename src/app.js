@@ -75,15 +75,15 @@ app.get('/', (req, res) => {
 });
 
 // Public Health Check Routes (Exempt from Tenant Resolution)
-app.use('/api/v1/health', healthRoutes);
+app.use(['/api/v1/health', '/v1/health', '/health'], healthRoutes);
 
 // Apply Tenant Resolution Middleware to All Tenant-Scoped API Routes (Lecture 18)
-app.use('/api/v1', tenantResolver);
+app.use(['/api/v1', '/v1'], tenantResolver);
 
 // Tenant-Scoped API Routes
-app.use('/api/v1/orders', orderRoutes);
-app.use('/api/v1/products', productRoutes);
-app.use('/api/v1/benchmarks', benchmarkRoutes);
+app.use(['/api/v1/orders', '/v1/orders'], orderRoutes);
+app.use(['/api/v1/products', '/v1/products'], productRoutes);
+app.use(['/api/v1/benchmarks', '/v1/benchmarks'], benchmarkRoutes);
 
 // Global Error Handler
 app.use(errorHandler);

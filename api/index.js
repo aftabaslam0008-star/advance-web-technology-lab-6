@@ -40,10 +40,17 @@ module.exports = async (req, res) => {
   try {
     await Promise.race([
       ensureServerlessBootstrap(),
-      new Promise(resolve => setTimeout(resolve, 2000))
+      new Promise(resolve => setTimeout(resolve, 1500))
     ]);
   } catch (e) {
     // proceed
   }
+
+  // Handle URL normalization if Vercel strips /api or rewrites it
+  const matchedPath = req.headers['x-matched-path'];
+  if (matchedPath && matchedPath.startsWith('/api') && !req.url.startsWith('/api')) {
+    req.url = matchedPath;
+  }
+
   return app(req, res);
 };
