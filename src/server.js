@@ -19,7 +19,8 @@ async function bootstrap() {
     await createCompositeIndex();
 
     // 3. Seed Initial Tenants, Products, and Orders
-    await seedDatabase(50);
+    const seedOrderCount = (process.env.RENDER || process.env.VERCEL) ? 10 : 30;
+    await seedDatabase(seedOrderCount);
 
     // 4. Initialize Kafka Producer & Start Kafka Consumer Group (Lecture 18)
     await initProducer();

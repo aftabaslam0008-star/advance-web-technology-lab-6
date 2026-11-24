@@ -3,11 +3,13 @@ services:
     name: advance-web-technology-lab-6
     env: node
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: npm install --production
+    startCommand: node --max-old-space-size=256 src/server.js
     envVars:
       - key: NODE_ENV
         value: production
+      - key: LOW_MEMORY
+        value: "true"
       - key: DB_USE_EMBEDDED
         value: "true"
       - key: KAFKA_ENABLED

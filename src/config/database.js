@@ -57,6 +57,22 @@ class EmbeddedPgPool {
     if (this.initPromise) return this.initPromise;
 
     this.initPromise = (async () => {
+      // Render Free tier has a strict 512MB RAM cap.
+      // Skipping heavy WASM compilation prevents OOM (Out Of Memory) crashes.
+      const isLowMemory = Boolean(
+        process.env.RENDER || 
+        process.env.VERCEL || 
+        process.env.LOW_MEMORY === 'true' ||
+        process.env.NODE_ENV === 'production'
+      );
+
+      if (isLowMemory) {
+        logger.info('Low-memory cloud environment detected (Render/Vercel). Activating lightweight in-memory SQL store (< 50MB RAM)...');
+        this.useMemoryFallback = true;
+        this.isReady = true;
+        return;
+      }
+
       try {
         logger.info('Initializing Embedded PostgreSQL engine (PGlite WASM with full PostgreSQL dialect)...');
         this.pglite = new PGlite();
