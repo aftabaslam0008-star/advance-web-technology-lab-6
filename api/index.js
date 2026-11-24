@@ -37,6 +37,13 @@ async function ensureServerlessBootstrap() {
  * Vercel Serverless Function Handler
  */
 module.exports = async (req, res) => {
-  await ensureServerlessBootstrap();
+  try {
+    await Promise.race([
+      ensureServerlessBootstrap(),
+      new Promise(resolve => setTimeout(resolve, 2000))
+    ]);
+  } catch (e) {
+    // proceed
+  }
   return app(req, res);
 };

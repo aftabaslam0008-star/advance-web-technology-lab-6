@@ -4,6 +4,7 @@
   "description": "",
   "main": "src/server.js",
   "scripts": {
+    "build": "echo 'Build complete'",
     "start": "node src/server.js",
     "sequence": "node scripts/run-sequence.js",
     "demo": "node scripts/run-sequence.js",
